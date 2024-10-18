@@ -1,0 +1,61 @@
+import AsistenService from './AsistenService'
+
+export async function apiGetAll{{modelName}}s<T, U extends Record<string, unknown>
+>(data: U) {
+    return AsistenService.fetchData<T>({
+        url: '/{{modelPluralLowerCase}}/get',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiGet{{modelName}}s<T, U extends Record<string, unknown>>(
+    data: U
+) {
+    return AsistenService.fetchData<T>({
+        url: '/{{modelPluralLowerCase}}/list',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiGet{{modelName}}<T, U extends Record<string, unknown>>(
+    params: U
+) {
+    return AsistenService.fetchData<T>({
+        url: `/{{modelPluralLowerCase}}/${params.id}/edit`,
+        method: 'get',
+    })
+}
+
+export async function apiCreate{{modelName}}<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return AsistenService.fetchData<T>({
+        url: '/{{modelPluralLowerCase}}',
+        method: 'post',
+        data,
+    })
+}
+
+export async function apiUpdate{{modelName}}<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return AsistenService.fetchData<T>({
+        url: `/{{modelPluralLowerCase}}/${data.id}`,
+        method: 'put',
+        data,
+    })
+}
+
+export async function apiDelete{{modelName}}<
+    T,
+    U extends Record<string, unknown>
+>(data: U) {
+    return AsistenService.fetchData<T>({
+        url: `/{{modelPluralLowerCase}}/${data.id}`,
+        method: 'delete'
+    })
+}

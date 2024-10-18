@@ -1,0 +1,243 @@
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
+import {
+    apiGet{{modelName}}s,
+    apiGetAll{{modelName}}s,
+    apiGet{{modelName}},
+    apiUpdate{{modelName}},
+    apiDelete{{modelName}},
+} from '@/services/{{modelName}}sService'
+import type { TableQueries } from '@/@types/common'
+
+type Options = {
+    label: string
+    value: string
+}
+type {{modelName}} = {
+    id?: string
+    nomor_surat?: string,
+    tanggal_surat?: string,
+    nama_pengirim?: string,
+    tanggal_terima?: string,
+    jenis_surat_masuk_id: Options | string,
+    perihal?: string,
+    nama_peserta?: string,
+    nrp_peserta?: string,
+    kpa_peserta?: string,
+    nopens_peserta?: string,
+    pangkat_peserta?: string,
+    nama_pemohon?: string,
+    nomor_hp?: string,
+    alamat?: string,
+    keterangan?: string,
+}
+
+type {{modelName}}s = {{modelName}}[]
+
+type {{modelName}}List = {
+    draw: number
+    recordsFiltered: number
+    recordsTotal: number
+    data: {{modelName}}s
+}
+
+type Get{{modelName}}sResponse = {
+    data: {{modelName}}List
+    message: string
+    success: boolean
+    recordsTotal: number
+}
+
+type FilterQueries = {
+    name: string
+    category: string[]
+    status: number[]
+    productStatus: number
+}
+
+export type {{modelName}}sState = {
+    loading: boolean
+    deleteConfirmation: boolean
+    {{modelNameLowerCase}}: {{modelName}}
+    tableData: TableQueries
+    filterData: FilterQueries
+    {{modelNameLowerCase}}List: {{modelName}}[]
+    {{modelNameLowerCase}}List: {{modelName}}s
+}
+
+type Get{{modelName}}sRequest = TableQueries & { filterData?: FilterQueries }
+
+export const SLICE_NAME = '{{modelNameLowerCase}}s'
+
+export const get{{modelName}}s = createAsyncThunk(
+    SLICE_NAME + '/get{{modelName}}s',
+    async (data: Get{{modelName}}sRequest) => {
+        const response = await apiGet{{modelName}}s<
+            Get{{modelName}}sResponse,
+            Get{{modelName}}sRequest
+        >(data)
+        return response.data
+    }
+)
+
+export const getAll{{modelName}}s = createAsyncThunk(
+    SLICE_NAME + '/getAll{{modelName}}s',
+    async (data: Get{{modelName}}sRequest) => {
+        const response = await apiGetAll{{modelName}}s<
+            Get{{modelName}}sResponse,
+            Get{{modelName}}sRequest
+        >(data)
+        return response.data
+    }
+)
+
+export const get{{modelName}} = createAsyncThunk(
+    SLICE_NAME + '/get{{modelName}}',
+    async (data: { id: string }) => {
+        const response = await apiGet{{modelName}}<
+            {{modelName}},
+            { id: string }
+        >(data)
+        return response.data
+    }
+)
+
+export const update{{modelName}} = createAsyncThunk(
+    SLICE_NAME + '/update{{modelName}}',
+    async (data: {{modelName}}) => {
+        const response = await apiUpdate{{modelName}}<
+            {{modelName}},
+            {{modelName}}
+        >(data)
+        return response.data
+    }
+)
+
+export const delete{{modelName}} = async (data: {{modelName}}) => {
+    const response = await apiDelete{{modelName}}<
+        boolean,
+        {{modelName}}
+    >(data)
+    return response.data
+    // return true;
+}
+
+export const initialTableData: TableQueries = {
+    total: 0,
+    pageIndex: 1,
+    pageSize: 10,
+    query: '',
+    sort: {
+        order: '',
+        key: '',
+    },
+}
+
+const initialState: {{modelName}}sState = {
+    loading: false,
+    deleteConfirmation: false,
+    {{modelNameLowerCase}}: {
+        id: '',
+        nomor_surat: '',
+        tanggal_surat: '',
+        nama_pengirim: '',
+        tanggal_terima: '',
+        jenis_surat_masuk_id: '',
+        perihal: '',
+        nama_peserta: '',
+        nrp_peserta: '',
+        kpa_peserta: '',
+        nopens_peserta: '',
+        pangkat_peserta: '',
+        nama_pemohon: '',
+        nomor_hp: '',
+        alamat: '',
+        keterangan: '',
+    },
+    {{modelNameLowerCase}}List: [],
+    {{modelNameLowerCase}}List: [],
+    tableData: initialTableData,
+    filterData: {
+        name: '',
+        category: ['bags', 'cloths', 'devices', 'shoes', 'watches'],
+        status: [0, 1, 2],
+        productStatus: 0,
+    },
+}
+
+const {{modelNameLowerCase}}sSlice = createSlice({
+    name: `${SLICE_NAME}/state`,
+    initialState,
+    reducers: {
+        updateProductList: (state, action) => {
+            state.{{modelNameLowerCase}}List = action.payload
+        },
+        setTableData: (state, action) => {
+            state.tableData = action.payload
+        },
+        setFilterData: (state, action) => {
+            state.filterData = action.payload
+        },
+        toggleDeleteConfirmation: (state, action) => {
+            state.deleteConfirmation = action.payload
+        },
+        setSelected{{modelName}}: (state, action) => {
+            state.{{modelNameLowerCase}} = action.payload
+        },
+    },
+    extraReducers: (builder) => {
+        builder
+            .addCase(get{{modelName}}s.fulfilled, (state, action) => {
+                state.{{modelNameLowerCase}}List = action.payload.data.data;
+                state.tableData.total = action.payload.data.recordsTotal
+                state.loading = false
+            })
+            .addCase(get{{modelName}}s.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(get{{modelName}}s.rejected, (state) => {
+                state.loading = true
+            })
+            .addCase(getAll{{modelName}}s.fulfilled, (state, action) => {
+                state.{{modelNameLowerCase}}List = action.payload.data;
+                state.loading = false
+            })
+            .addCase(getAll{{modelName}}s.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(getAll{{modelName}}s.rejected, (state) => {
+                state.loading = false
+            })
+            .addCase(get{{modelName}}.fulfilled, (state, action) => {
+                state.{{modelNameLowerCase}} = action.payload;
+                // state.tableData.total = action.payload.data.recordsTotal
+                // state.filterData.name = 'Darsono';
+                state.loading = false                
+            })
+            .addCase(get{{modelName}}.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(get{{modelName}}.rejected, (state) => {
+                state.loading = false
+            })
+            .addCase(update{{modelName}}.fulfilled, (state, action) => {
+                // state.{{modelNameLowerCase}} = action.payload;
+                state.loading = false
+            })
+            .addCase(update{{modelName}}.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(update{{modelName}}.rejected, (state) => {
+                state.loading = false
+            })
+    },
+})
+
+export const {
+    // updateProductList,
+    setTableData,
+    // setFilterData,
+    toggleDeleteConfirmation,
+    setSelected{{modelName}},
+} = {{modelNameLowerCase}}sSlice.actions
+
+export default {{modelNameLowerCase}}sSlice.reducer

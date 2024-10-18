@@ -1,0 +1,22 @@
+import Button from '@/components/ui/Button'
+import { HiDownload, HiPlusCircle } from 'react-icons/hi'
+import {{modelName}}TableSearch from './{{modelName}}TableSearch'
+import { Link } from 'react-router-dom'
+
+const {{modelName}}TableTools = () => {
+    return (
+        <div className="flex flex-col lg:flex-row lg:items-center">
+            <{{modelName}}TableSearch />            
+            <Link
+                className="block lg:inline-block md:mb-0 mb-4"
+                to="/app/suratmasuks/surat-create"
+            >
+                <Button block variant="solid" size="sm" icon={<HiPlusCircle />}>
+                    Create {{modelTitle}}
+                </Button>
+            </Link>
+        </div>
+    )
+}
+
+export default {{modelName}}TableTools

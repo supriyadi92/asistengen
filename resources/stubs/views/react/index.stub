@@ -1,0 +1,21 @@
+import reducer from './store'
+import { injectReducer } from '@/store'
+import AdaptableCard from '@/components/shared/AdaptableCard'
+import {{modelName}}Table from './components/{{modelName}}Table'
+import {{modelName}}TableTools from './components/{{modelName}}TableTools'
+
+injectReducer('{{modelNamePluralLowerCase}}List', reducer)
+
+const {{modelName}}sIndex = () => {
+    return (
+        <AdaptableCard className="h-full" bodyClass="h-full">
+            <div className="lg:flex items-center justify-between mb-4">
+                <h3 className="mb-4 lg:mb-0">{{modelTitle}}</h3>
+                <{{modelName}}TableTools />
+            </div>
+            <{{modelName}}Table />
+        </AdaptableCard>
+    )
+}
+
+export default {{modelName}}sIndex

@@ -1,0 +1,15 @@
+        <div className="col-span-1">
+            <FormItem
+                label="{{title}}"
+                invalid={(errors.{{column}} && touched.{{column}}) as boolean}
+                errorMessage={errors.{{column}}?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="{{column}}"
+                    placeholder="{{title}}"
+                    component={Input}
+                />
+            </FormItem>
+        </div>

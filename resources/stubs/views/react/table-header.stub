@@ -1,0 +1,8 @@
+            {
+                header: "{{title}}",
+                accessorKey: "{{column}}",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.{{column}}}</span>
+                },
+            }
