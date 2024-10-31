@@ -14,21 +14,7 @@ type Options = {
 }
 type {{modelName}} = {
     id?: string
-    nomor_surat?: string,
-    tanggal_surat?: string,
-    nama_pengirim?: string,
-    tanggal_terima?: string,
-    jenis_surat_masuk_id: Options | string,
-    perihal?: string,
-    nama_peserta?: string,
-    nrp_peserta?: string,
-    kpa_peserta?: string,
-    nopens_peserta?: string,
-    pangkat_peserta?: string,
-    nama_pemohon?: string,
-    nomor_hp?: string,
-    alamat?: string,
-    keterangan?: string,
+    {{reactSliceFields}}
 }
 
 type {{modelName}}s = {{modelName}}[]
@@ -44,7 +30,6 @@ type Get{{modelName}}sResponse = {
     data: {{modelName}}List
     message: string
     success: boolean
-    recordsTotal: number
 }
 
 type FilterQueries = {
@@ -60,7 +45,6 @@ export type {{modelName}}sState = {
     {{modelNameLowerCase}}: {{modelName}}
     tableData: TableQueries
     filterData: FilterQueries
-    {{modelNameLowerCase}}List: {{modelName}}[]
     {{modelNameLowerCase}}List: {{modelName}}s
 }
 
@@ -83,7 +67,7 @@ export const getAll{{modelName}}s = createAsyncThunk(
     SLICE_NAME + '/getAll{{modelName}}s',
     async (data: Get{{modelName}}sRequest) => {
         const response = await apiGetAll{{modelName}}s<
-            Get{{modelName}}sResponse,
+            {{modelName}}List,
             Get{{modelName}}sRequest
         >(data)
         return response.data
@@ -137,23 +121,8 @@ const initialState: {{modelName}}sState = {
     deleteConfirmation: false,
     {{modelNameLowerCase}}: {
         id: '',
-        nomor_surat: '',
-        tanggal_surat: '',
-        nama_pengirim: '',
-        tanggal_terima: '',
-        jenis_surat_masuk_id: '',
-        perihal: '',
-        nama_peserta: '',
-        nrp_peserta: '',
-        kpa_peserta: '',
-        nopens_peserta: '',
-        pangkat_peserta: '',
-        nama_pemohon: '',
-        nomor_hp: '',
-        alamat: '',
-        keterangan: '',
+        {{initials}}
     },
-    {{modelNameLowerCase}}List: [],
     {{modelNameLowerCase}}List: [],
     tableData: initialTableData,
     filterData: {
@@ -198,7 +167,7 @@ const {{modelNameLowerCase}}sSlice = createSlice({
                 state.loading = true
             })
             .addCase(getAll{{modelName}}s.fulfilled, (state, action) => {
-                state.{{modelNameLowerCase}}List = action.payload.data;
+                state.{{modelNameLowerCase}}List = action.payload.data.data;
                 state.loading = false
             })
             .addCase(getAll{{modelName}}s.pending, (state) => {

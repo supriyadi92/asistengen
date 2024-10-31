@@ -5,12 +5,12 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import {
-    get{{modelName}},
-    update{{modelName}},
+    getAkun,
+    updateAkun,
     useAppDispatch,
     useAppSelector,
-} from '../{{modelView}}s/store'
-import { apiUpdate{{modelName}} } from '@/services/{{modelName}}sService'
+} from '../akuns/store'
+import { apiUpdateAkun } from '@/services/AkunsService'
 import reducer from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -31,40 +31,52 @@ import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik'
 import isEmpty from 'lodash/isEmpty'
 
 type FormFieldsName = {
-    {{reactFields}}
+    
+	kode: required|string,
+	nama: string,
+	pos_akun: string,
+	pos_laporan: string,
+	saldo_awal_debet: number,
+	saldo_awal_kredit: number,
 }
 
 type SetSubmitting = (isSubmitting: boolean) => void
 
-injectReducer('{{modelNameLowerCase}}Edit', reducer)
+injectReducer('akunEdit', reducer)
 
-const {{modelName}}Edit = () => {
+const AkunEdit = () => {
     const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
-    const {{modelNameLowerCase}}Data = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.{{modelNameLowerCase}}.data
+    const akunData = useAppSelector(
+        (state) => state.akunEdit.data.akun.data
     )
     const loading = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.loading
+        (state) => state.akunEdit.data.loading
     )
     const fetchData = (data: { id: string }) => {
-        dispatch(get{{modelName}}(data))
+        dispatch(getAkun(data))
 
     }
 
-    const jenis{{modelName}}s = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.jenis{{modelName}}List
+    const jenisAkuns = useAppSelector(
+        (state) => state.akunEdit.data.jenisAkunList
     )
 
-    const jenis{{modelName}}Opts = jenis{{modelName}}s ? jenis{{modelName}}s.map(function (jenis: any) {
+    const jenisAkunOpts = jenisAkuns ? jenisAkuns.map(function (jenis: any) {
         return { value: jenis.id, label: jenis.nama };
     }) : { value: '', label: '' }
 
     const validationSchema = Yup.object().shape({
-        {{validationFields}}
+        
+	kode: Yup.string().required('Kode Required'),
+	nama: Yup.string().required('Nama Required'),
+	pos_akun: Yup.string().required('Pos_Akun Required'),
+	pos_laporan: Yup.string().required('Pos_Laporan Required'),
+	saldo_awal_debet: Yup.string().required('Saldo_Awal_Debet Required'),
+	saldo_awal_kredit: Yup.string().required('Saldo_Awal_Kredit Required'),
     })
 
     const handleFormSubmit = async (
@@ -73,7 +85,7 @@ const {{modelName}}Edit = () => {
     ) => {
         try {
             setSubmitting(true)
-            const success = await apiUpdate{{modelName}}(values)
+            const success = await apiUpdateAkun(values)
             setSubmitting(false)
             if (success) {
                 popNotification('updated')
@@ -96,7 +108,7 @@ const {{modelName}}Edit = () => {
     }
 
     const handleDiscard = () => {
-        navigate('/app/{{modelPluralLowerCase}}/index')
+        navigate('/app/akuns/index')
     }
 
     const popNotification = (keyword: string) => {
@@ -106,13 +118,13 @@ const {{modelName}}Edit = () => {
                 type="success"
                 duration={2500}
             >
-                {{modelTitle}} successfuly {keyword}
+                Product successfuly {keyword}
             </Notification>,
             {
                 placement: 'top-center',
             }
         )
-        navigate('/app/{{modelPluralLowerCase}}/index')
+        navigate('/app/akuns/index')
     }
 
     useEffect(() => {
@@ -127,11 +139,11 @@ const {{modelName}}Edit = () => {
     return (
         <>
             <Loading loading={loading}>
-                {!isEmpty({{modelNameLowerCase}}Data) && (
+                {!isEmpty(akunData) && (
                     <>
                         <Formik
                             enableReinitialize={true}
-                            initialValues={{{modelNameLowerCase}}Data}
+                            initialValues={akunData}
                             validationSchema={validationSchema}
                             onSubmit={(values: FormFieldsName, { setSubmitting }) => {
                                 const formData = cloneDeep(values)
@@ -149,7 +161,92 @@ const {{modelName}}Edit = () => {
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                             <div className="lg:col-span-2">
                                                 <AdaptableCard divider isLastChild className="mb-4">                    
-                                                        {{form}}                   
+                                                        
+<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Kode"
+                invalid={(errors.kode && touched.kode) as boolean}
+                errorMessage={errors.kode?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="kode"
+                    placeholder="Kode"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Nama"
+                invalid={(errors.nama && touched.nama) as boolean}
+                errorMessage={errors.nama?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="nama"
+                    placeholder="Nama"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Pos Akun"
+                invalid={(errors.pos_akun && touched.pos_akun) as boolean}
+                errorMessage={errors.pos_akun?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="pos_akun"
+                    placeholder="Pos Akun"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Pos Laporan"
+                invalid={(errors.pos_laporan && touched.pos_laporan) as boolean}
+                errorMessage={errors.pos_laporan?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="pos_laporan"
+                    placeholder="Pos Laporan"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Saldo Awal Debet"
+                invalid={(errors.saldo_awal_debet && touched.saldo_awal_debet) as boolean}
+                errorMessage={errors.saldo_awal_debet?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="saldo_awal_debet"
+                    placeholder="Saldo Awal Debet"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Saldo Awal Kredit"
+                invalid={(errors.saldo_awal_kredit && touched.saldo_awal_kredit) as boolean}
+                errorMessage={errors.saldo_awal_kredit?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="saldo_awal_kredit"
+                    placeholder="Saldo Awal Kredit"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div>                   
                                                 </AdaptableCard>
                                             </div>
                                         </div>
@@ -184,7 +281,7 @@ const {{modelName}}Edit = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty({{modelNameLowerCase}}Data) && (
+            {!loading && isEmpty(akunData) && (
                 <div className="h-full flex flex-col items-center justify-top">
                     <DoubleSidedImage
                         src="/img/others/img-2.png"
@@ -198,4 +295,4 @@ const {{modelName}}Edit = () => {
     )
 }
 
-export default {{modelName}}Edit
+export default AkunEdit

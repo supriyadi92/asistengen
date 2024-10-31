@@ -3,22 +3,22 @@ import Notification from '@/components/ui/Notification'
 import ConfirmDialog from '@/components/shared/ConfirmDialog'
 import {
     toggleDeleteConfirmation,
-    delete{{modelName}},
-    get{{modelName}}s,
+    deleteAkun,
+    getAkuns,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 
-const {{modelName}}DeleteConfirmation = () => {
+const AkunDeleteConfirmation = () => {
     const dispatch = useAppDispatch()
     const dialogOpen = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.deleteConfirmation
+        (state) => state.akunsList.data.deleteConfirmation
     )
-    const selected{{modelName}} = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.{{modelNameLowerCase}}
+    const selectedAkun = useAppSelector(
+        (state) => state.akunsList.data.akun
     )
     const tableData = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.tableData
+        (state) => state.akunsList.data.tableData
     )
 
     const onDialogClose = () => {
@@ -28,16 +28,16 @@ const {{modelName}}DeleteConfirmation = () => {
     const onDelete = async () => {
         dispatch(toggleDeleteConfirmation(false))
         try{
-            const success = await delete{{modelName}}(selected{{modelName}})
+            const success = await deleteAkun(selectedAkun)
             if (success) {
-                dispatch(get{{modelName}}s(tableData))
+                dispatch(getAkuns(tableData))
                 toast.push(
                     <Notification
                         title={'Successfuly Deleted'}
                         type="success"
                         duration={2500}
                     >
-                        {{modelTitle}} successfuly deleted
+                        Product successfuly deleted
                     </Notification>,
                     {
                         placement: 'top-center',
@@ -67,7 +67,7 @@ const {{modelName}}DeleteConfirmation = () => {
         <ConfirmDialog
             isOpen={dialogOpen}
             type="danger"
-            title="Delete {{modelTitle}}"
+            title="Delete Akun"
             confirmButtonColor="red-600"
             onClose={onDialogClose}
             onRequestClose={onDialogClose}
@@ -75,11 +75,11 @@ const {{modelName}}DeleteConfirmation = () => {
             onConfirm={onDelete}
         >
             <p>
-                Are you sure you want to delete this {{modelTitle}}? This action cannot be
+                Are you sure you want to delete this Akun? This action cannot be
                 undone.
             </p>
         </ConfirmDialog>
     )
 }
 
-export default {{modelName}}DeleteConfirmation
+export default AkunDeleteConfirmation

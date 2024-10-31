@@ -293,6 +293,24 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
      *
      * @return string
      */
+    protected function _getReactJsRoutesPath($view): string
+    {
+        $name = Str::kebab($this->name);
+        $filename = Str::plural($this->name);
+        $path = match ($this->options['stack']) {
+            'vuejs' => "/ts/routes/pages/$name/$view.vue",
+            'reactjs' => "/ts/reactroutes/app{$filename}{$view}.tsx",
+            default => "/views/default/$name/$view.blade.php"
+        };
+
+        return $this->makeDirectory(resource_path($path));
+    }
+
+    /**
+     * @param $name
+     *
+     * @return string
+     */
     protected function _getRequestPath($name): string
     {
         return app_path($this->_getNamespacePath($this->requestNamespace)."{$name}Request.php");
@@ -401,6 +419,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
             '{{modelPluralLowerCase}}' => Str::lower(Str::plural($this->name)),
             '{{modelRoute}}' => $this->_getRoute(),
             '{{modelView}}' => Str::kebab($this->name),
+            '{{modelTable}}' => Str::snake($this->name),
             '{{createdDate}}' => \Carbon\Carbon::now()->isoFormat('dddd, D MMM Y'),
             '{{updatedDate}}' => \Carbon\Carbon::now()->isoFormat('dddd, D MMM Y'),
         ];
@@ -563,7 +582,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         $rulesArray = [];
         $softDeletesNamespace = $softDeletes = '';
         $modelName = Str::camel($this->name);
-
+        // dd($this->getColumns());
         foreach ($this->getColumns() as $column) {
             $properties .= "\n * @property \${$column['name']}";
 
@@ -580,24 +599,33 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
                 $rulesArray[$column['name']][] = 'boolean';
             }
 
+            if ($column['type_name'] == 'int' || $column['type_name'] == 'bigint') {
+                $rulesArray[$column['name']][] = 'number';
+            }
+
             if ($column['type_name'] == 'uuid') {
                 $rulesArray[$column['name']][] = 'uuid';
             }
 
-            if ($column['type_name'] == 'text' || $column['type_name'] == 'varchar') {
+            if ($column['type_name'] == 'text' || $column['type_name'] == 'varchar' || $column['type_name'] == 'char') {
                 $rulesArray[$column['name']][] = 'string';
             }
-
+			
+			if ($column['type_name'] == 'date') {
+                $rulesArray[$column['name']][] = 'string';
+            }
+			
             if ($column['name'] == 'deleted_at') {
                 $softDeletesNamespace = "use Illuminate\Database\Eloquent\SoftDeletes;\n";
                 $softDeletes = "use SoftDeletes;\n";
             }
         }
-
+        // dd($this->unwantedColumns);
         $rules = function () use ($rulesArray) {
             $rules = '';
             // Exclude the unwanted rulesArray
             $rulesArray = Arr::except($rulesArray, $this->unwantedColumns);
+            
             // Make rulesArray
             foreach ($rulesArray as $col => $rule) {
                 $rules .= "\n\t\t\t'$col' => '".implode('|', $rule)."',";
@@ -606,25 +634,47 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
             return $rules;
         };
 
+        $validationFields = function () use ($rulesArray) {
+            $validationFields = '';
+            // Exclude the unwanted rulesArray
+            $rulesArray = Arr::except($rulesArray, $this->unwantedColumns);
+            // Make form fields
+            foreach ($rulesArray as $col => $val) {
+                $validationFields .= "\n\t$col: Yup.string().required('".Str::title(Str::snake($col, ' '))." Required'),";
+            }
+
+            return $validationFields;
+        };
+        
         $reactFields = function () use ($rulesArray) {
             $reactFields = '';
             // Exclude the unwanted rulesArray
             $rulesArray = Arr::except($rulesArray, $this->unwantedColumns);
             // Make form fields
             foreach ($rulesArray as $col => $rule) {
-                $reactFields .= "\n\t'$col': '".implode('|', $rule)."',";
+                $reactFields .= "\n\t$col: ".implode('|', $rule).",";
             }
 
             return $reactFields;
         };
+		$reactSliceFields = function () use ($rulesArray) {
+            $reactFields = '';
+            // Exclude the unwanted rulesArray
+            $rulesArray = Arr::except($rulesArray, $this->unwantedColumns);
+            // Make form fields
+            foreach ($rulesArray as $col => $rule) {
+                $reactFields .= "\n\t$col?: ".implode('|', $rule).",";
+            }
 
+            return $reactFields;
+        };
         $initials = function () use ($rulesArray) {
             $initials = '';
             // Exclude the unwanted rulesArray
             $rulesArray = Arr::except($rulesArray, $this->unwantedColumns);
             // Make form fields
             foreach ($rulesArray as $col => $rule) {
-                $initials .= "\n\t'$col': '',";
+                $initials .= "\n\t$col: '',";
             }
 
             return $initials;
@@ -633,7 +683,7 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
         $fillable = function () {
 
             $filterColumns = $this->getFilteredColumns();
-
+            
             // Add quotes to the unwanted columns for fillable
             array_walk($filterColumns, function (&$value) {
                 $value = "'".$value."'";
@@ -653,7 +703,9 @@ abstract class GeneratorCommand extends Command implements PromptsForMissingInpu
             '{{rules}}' => $rules(),
             '{{relations}}' => $relations,
             '{{properties}}' => $properties,
+            '{{validationFields}}' => $validationFields(),
             '{{reactFields}}' => $reactFields(),
+			'{{reactSliceFields}}' => $reactSliceFields(),
             '{{initials}}' => $initials(),
             '{{softDeletesNamespace}}' => $softDeletesNamespace,
             '{{softDeletes}}' => $softDeletes,

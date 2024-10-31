@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : JenisSuratKeluar.php
+// File name   : Role.php
 // Created     : Senin, 21 Okt 2024
 // Last Update : Senin, 21 Okt 2024
 //
-// Description : Model JenisSuratKeluar.
+// Description : Model Role.
 //
 // Author: Supriyadi
 //
@@ -29,18 +29,19 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class JenisSuratKeluar
+ * Class Role
  *
  * @property $id
- * @property $kode
- * @property $nama
- * @property $format
- * @property $posisi
+ * @property $name
+ * @property $guard_name
+ * @property $created_at
+ * @property $updated_at
  *
+ * @property ModelHasRole[] $modelHasRoles
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class JenisSuratKeluar extends Authenticatable 
+class Role extends Authenticatable 
 {
     use HasApiTokens, Notifiable, HasRoles;
     
@@ -49,8 +50,8 @@ class JenisSuratKeluar extends Authenticatable
      *
      * @var array
      */
-	protected $table = 'jenis_surat_keluars';
-    protected $fillable = ['kode', 'nama', 'format', 'posisi'];
+	protected $table = 'roles';
+    protected $fillable = ['name', 'guard_name'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -70,5 +71,13 @@ class JenisSuratKeluar extends Authenticatable
         'updated_at' => 'datetime',
     ];
 
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function modelHasRoles()
+    {
+        return $this->hasMany(\App\Models\ModelHasRole::class, 'id', 'role_id');
+    }
     
 }

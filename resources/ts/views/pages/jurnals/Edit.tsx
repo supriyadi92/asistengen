@@ -5,13 +5,12 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import {
-    getJenisSuratKeluar,
-    getJenisJenisSuratKeluars,
-    updateJenisSuratKeluar,
+    getJurnal,
+    updateJurnal,
     useAppDispatch,
     useAppSelector,
-} from '../jenis-surat-keluars/store'
-import { apiUpdateJenisSuratKeluar } from '@/services/JenisSuratKeluarsService'
+} from '../jurnals/store'
+import { apiUpdateJurnal } from '@/services/JurnalsService'
 import reducer from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -33,56 +32,70 @@ import isEmpty from 'lodash/isEmpty'
 
 type FormFieldsName = {
     
-	'kode': 'string',
-	'nama': 'required|string',
-	'format': 'string',
-	'posisi': 'int',
+	tanggal: string,
+	nomor_bukti: string,
+	kode_pembantu: string,
+	uraian: string,
+	kategori_jurnal_id: number,
+	akun_debet_id: number,
+	akun_kredit_id: number,
+	jumlah_debet: number,
+	jumlah_kredit: number,
+	keterangan: string,
+	posting_id: number,
 }
 
 type SetSubmitting = (isSubmitting: boolean) => void
 
-injectReducer('jenisSuratKeluarEdit', reducer)
+injectReducer('jurnalEdit', reducer)
 
-const JenisSuratKeluarEdit = () => {
+const JurnalEdit = () => {
     const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
-    const jenisSuratKeluarData = useAppSelector(
-        (state) => state.jenisSuratKeluarEdit.data.jenisSuratKeluar.data
+    const jurnalData = useAppSelector(
+        (state) => state.jurnalEdit.data.jurnal.data
     )
     const loading = useAppSelector(
-        (state) => state.jenisSuratKeluarEdit.data.loading
+        (state) => state.jurnalEdit.data.loading
     )
     const fetchData = (data: { id: string }) => {
-        dispatch(getJenisSuratKeluar(data))
+        dispatch(getJurnal(data))
 
     }
 
-    const jenisJenisSuratKeluars = useAppSelector(
-        (state) => state.jenisSuratKeluarEdit.data.jenisJenisSuratKeluarList
+    const jenisJurnals = useAppSelector(
+        (state) => state.jurnalEdit.data.jenisJurnalList
     )
 
-    const jenisJenisSuratKeluarOpts = jenisJenisSuratKeluars ? jenisJenisSuratKeluars.map(function (jenis: any) {
+    const jenisJurnalOpts = jenisJurnals ? jenisJurnals.map(function (jenis: any) {
         return { value: jenis.id, label: jenis.nama };
     }) : { value: '', label: '' }
 
     const validationSchema = Yup.object().shape({
         
-	kode: Yup.string().required('Kode Required'),
-	nama: Yup.string().required('Nama Required'),
-	format: Yup.string().required('Format Required'),
-	posisi: Yup.string().required('Posisi Required'),
+	tanggal: Yup.string().required('Tanggal Required'),
+	nomor_bukti: Yup.string().required('Nomor_Bukti Required'),
+	kode_pembantu: Yup.string().required('Kode_Pembantu Required'),
+	uraian: Yup.string().required('Uraian Required'),
+	kategori_jurnal_id: Yup.string().required('Kategori_Jurnal_Id Required'),
+	akun_debet_id: Yup.string().required('Akun_Debet_Id Required'),
+	akun_kredit_id: Yup.string().required('Akun_Kredit_Id Required'),
+	jumlah_debet: Yup.string().required('Jumlah_Debet Required'),
+	jumlah_kredit: Yup.string().required('Jumlah_Kredit Required'),
+	keterangan: Yup.string().required('Keterangan Required'),
+	posting_id: Yup.string().required('Posting_Id Required'),
     })
 
     const handleFormSubmit = async (
-        values: FormModel,
+        values: FormFieldsName,
         setSubmitting: SetSubmitting
     ) => {
         try {
             setSubmitting(true)
-            const success = await apiUpdateJenisSuratKeluar(values)
+            const success = await apiUpdateJurnal(values)
             setSubmitting(false)
             if (success) {
                 popNotification('updated')
@@ -105,7 +118,7 @@ const JenisSuratKeluarEdit = () => {
     }
 
     const handleDiscard = () => {
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/jurnals/index')
     }
 
     const popNotification = (keyword: string) => {
@@ -121,7 +134,7 @@ const JenisSuratKeluarEdit = () => {
                 placement: 'top-center',
             }
         )
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/jurnals/index')
     }
 
     useEffect(() => {
@@ -136,13 +149,13 @@ const JenisSuratKeluarEdit = () => {
     return (
         <>
             <Loading loading={loading}>
-                {!isEmpty(jenisSuratKeluarData) && (
+                {!isEmpty(jurnalData) && (
                     <>
                         <Formik
                             enableReinitialize={true}
-                            initialValues={jenisSuratKeluarData}
+                            initialValues={jurnalData}
                             validationSchema={validationSchema}
-                            onSubmit={(values: FormModel, { setSubmitting }) => {
+                            onSubmit={(values: FormFieldsName, { setSubmitting }) => {
                                 const formData = cloneDeep(values)
                                 handleFormSubmit(formData, setSubmitting);
                             }}
@@ -161,57 +174,155 @@ const JenisSuratKeluarEdit = () => {
                                                         
 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
             <FormItem
-                label="Kode"
-                invalid={(errors.kode && touched.kode) as boolean}
-                errorMessage={errors.kode?.toString()}
+                label="Tanggal"
+                invalid={(errors.tanggal && touched.tanggal) as boolean}
+                errorMessage={errors.tanggal?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="kode"
-                    placeholder="Kode"
+                    name="tanggal"
+                    placeholder="Tanggal"
                     component={Input}
                 />
             </FormItem>
         </div>        <div className="col-span-1">
             <FormItem
-                label="Nama"
-                invalid={(errors.nama && touched.nama) as boolean}
-                errorMessage={errors.nama?.toString()}
+                label="Nomor Bukti"
+                invalid={(errors.nomor_bukti && touched.nomor_bukti) as boolean}
+                errorMessage={errors.nomor_bukti?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="nama"
-                    placeholder="Nama"
+                    name="nomor_bukti"
+                    placeholder="Nomor Bukti"
                     component={Input}
                 />
             </FormItem>
         </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
             <FormItem
-                label="Format"
-                invalid={(errors.format && touched.format) as boolean}
-                errorMessage={errors.format?.toString()}
+                label="Kode Pembantu"
+                invalid={(errors.kode_pembantu && touched.kode_pembantu) as boolean}
+                errorMessage={errors.kode_pembantu?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="format"
-                    placeholder="Format"
+                    name="kode_pembantu"
+                    placeholder="Kode Pembantu"
                     component={Input}
                 />
             </FormItem>
         </div>        <div className="col-span-1">
             <FormItem
-                label="Posisi"
-                invalid={(errors.posisi && touched.posisi) as boolean}
-                errorMessage={errors.posisi?.toString()}
+                label="Uraian"
+                invalid={(errors.uraian && touched.uraian) as boolean}
+                errorMessage={errors.uraian?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="posisi"
-                    placeholder="Posisi"
+                    name="uraian"
+                    placeholder="Uraian"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Kategori Jurnal Id"
+                invalid={(errors.kategori_jurnal_id && touched.kategori_jurnal_id) as boolean}
+                errorMessage={errors.kategori_jurnal_id?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="kategori_jurnal_id"
+                    placeholder="Kategori Jurnal Id"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Akun Debet Id"
+                invalid={(errors.akun_debet_id && touched.akun_debet_id) as boolean}
+                errorMessage={errors.akun_debet_id?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="akun_debet_id"
+                    placeholder="Akun Debet Id"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Akun Kredit Id"
+                invalid={(errors.akun_kredit_id && touched.akun_kredit_id) as boolean}
+                errorMessage={errors.akun_kredit_id?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="akun_kredit_id"
+                    placeholder="Akun Kredit Id"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Jumlah Debet"
+                invalid={(errors.jumlah_debet && touched.jumlah_debet) as boolean}
+                errorMessage={errors.jumlah_debet?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="jumlah_debet"
+                    placeholder="Jumlah Debet"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Jumlah Kredit"
+                invalid={(errors.jumlah_kredit && touched.jumlah_kredit) as boolean}
+                errorMessage={errors.jumlah_kredit?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="jumlah_kredit"
+                    placeholder="Jumlah Kredit"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Keterangan"
+                invalid={(errors.keterangan && touched.keterangan) as boolean}
+                errorMessage={errors.keterangan?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="keterangan"
+                    placeholder="Keterangan"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Posting Id"
+                invalid={(errors.posting_id && touched.posting_id) as boolean}
+                errorMessage={errors.posting_id?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="posting_id"
+                    placeholder="Posting Id"
                     component={Input}
                 />
             </FormItem>
@@ -250,7 +361,7 @@ const JenisSuratKeluarEdit = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty(jenisSuratKeluarData) && (
+            {!loading && isEmpty(jurnalData) && (
                 <div className="h-full flex flex-col items-center justify-top">
                     <DoubleSidedImage
                         src="/img/others/img-2.png"
@@ -264,4 +375,4 @@ const JenisSuratKeluarEdit = () => {
     )
 }
 
-export default JenisSuratKeluarEdit
+export default JurnalEdit

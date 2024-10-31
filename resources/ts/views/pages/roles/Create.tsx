@@ -5,12 +5,12 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import {
-    getJenisSuratKeluar,
-    updateJenisSuratKeluar,
+    getRole,
+    updateRole,
     useAppDispatch,
     useAppSelector,
-} from '../jenis-surat-keluars/store'
-import { apiCreateJenisSuratKeluar } from '@/services/JenisSuratKeluarsService'
+} from '../roles/store'
+import { apiCreateRole } from '@/services/RolesService'
 import reducer from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -38,43 +38,37 @@ type Options = {
 
 type FormFieldsName = {
     
-	'kode': 'string',
-	'nama': 'required|string',
-	'format': 'string',
-	'posisi': 'int',
+	'name': 'required|string',
+	'guard_name': 'required|string',
 }
 
 const initialData = {
     
-	'kode': '',
-	'nama': '',
-	'format': '',
-	'posisi': '',
+	'name': '',
+	'guard_name': '',
 }
 
 type SetSubmitting = (isSubmitting: boolean) => void
 
-injectReducer('jenisSuratKeluarCreate', reducer)
+injectReducer('roleCreate', reducer)
 
-const JenisSuratKeluarCreate = () => {
+const RoleCreate = () => {
     const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
-    const jenisSuratKeluarData = useAppSelector(
-        (state) => state.jenisSuratKeluarCreate.data   // .jenisSuratKeluarEdit.data.jenisSuratKeluar.data
+    const roleData = useAppSelector(
+        (state) => state.roleCreate.data   // .roleEdit.data.role.data
     )
     const loading = useAppSelector(
-        (state) => state.jenisSuratKeluarCreate.data.loading
+        (state) => state.roleCreate.data.loading
     )
 
     const validationSchema = Yup.object().shape({
         
-	kode: Yup.string().required('Kode Required'),
-	nama: Yup.string().required('Nama Required'),
-	format: Yup.string().required('Format Required'),
-	posisi: Yup.string().required('Posisi Required'),
+	name: Yup.string().required('Name Required'),
+	guard_name: Yup.string().required('Guard_Name Required'),
     })
 
     const handleFormSubmit = async (
@@ -83,7 +77,7 @@ const JenisSuratKeluarCreate = () => {
     ) => {
         try {
             setSubmitting(true)
-            const success = await apiCreateJenisSuratKeluar(values)
+            const success = await apiCreateRole(values)
             setSubmitting(false)
             if (success) {
                 popNotification('added')
@@ -106,7 +100,7 @@ const JenisSuratKeluarCreate = () => {
     }
 
     const handleDiscard = () => {
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/roles/index')
     }
 
     const popNotification = (keyword: string) => {
@@ -122,7 +116,7 @@ const JenisSuratKeluarCreate = () => {
                 placement: 'top-center',
             }
         )
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/roles/index')
     }
     return (
         <>
@@ -149,57 +143,29 @@ const JenisSuratKeluarCreate = () => {
                                             
 <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
             <FormItem
-                label="Kode"
-                invalid={(errors.kode && touched.kode) as boolean}
-                errorMessage={errors.kode?.toString()}
+                label="Name"
+                invalid={(errors.name && touched.name) as boolean}
+                errorMessage={errors.name?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="kode"
-                    placeholder="Kode"
+                    name="name"
+                    placeholder="Name"
                     component={Input}
                 />
             </FormItem>
         </div>        <div className="col-span-1">
             <FormItem
-                label="Nama"
-                invalid={(errors.nama && touched.nama) as boolean}
-                errorMessage={errors.nama?.toString()}
+                label="Guard Name"
+                invalid={(errors.guard_name && touched.guard_name) as boolean}
+                errorMessage={errors.guard_name?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="nama"
-                    placeholder="Nama"
-                    component={Input}
-                />
-            </FormItem>
-        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
-            <FormItem
-                label="Format"
-                invalid={(errors.format && touched.format) as boolean}
-                errorMessage={errors.format?.toString()}
-            >
-                <Field
-                    type="text"
-                    autoComplete="off"
-                    name="format"
-                    placeholder="Format"
-                    component={Input}
-                />
-            </FormItem>
-        </div>        <div className="col-span-1">
-            <FormItem
-                label="Posisi"
-                invalid={(errors.posisi && touched.posisi) as boolean}
-                errorMessage={errors.posisi?.toString()}
-            >
-                <Field
-                    type="text"
-                    autoComplete="off"
-                    name="posisi"
-                    placeholder="Posisi"
+                    name="guard_name"
+                    placeholder="Guard Name"
                     component={Input}
                 />
             </FormItem>
@@ -239,4 +205,4 @@ const JenisSuratKeluarCreate = () => {
     )
 }
 
-export default JenisSuratKeluarCreate
+export default RoleCreate

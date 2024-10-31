@@ -5,12 +5,12 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import {
-    getJenisSuratKeluar,
-    updateJenisSuratKeluar,
+    getAkun,
+    updateAkun,
     useAppDispatch,
     useAppSelector,
-} from '../jenis-surat-keluars/store'
-import { apiCreateJenisSuratKeluar } from '@/services/JenisSuratKeluarsService'
+} from '../akuns/store'
+import { apiCreateAkun } from '@/services/AkunsService'
 import reducer from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -38,43 +38,49 @@ type Options = {
 
 type FormFieldsName = {
     
-	'kode': 'string',
-	'nama': 'required|string',
-	'format': 'string',
-	'posisi': 'int',
+	kode: required|string,
+	nama: string,
+	pos_akun: string,
+	pos_laporan: string,
+	saldo_awal_debet: number,
+	saldo_awal_kredit: number,
 }
 
 const initialData = {
     
-	'kode': '',
-	'nama': '',
-	'format': '',
-	'posisi': '',
+	kode: '',
+	nama: '',
+	pos_akun: '',
+	pos_laporan: '',
+	saldo_awal_debet: '',
+	saldo_awal_kredit: '',
 }
 
 type SetSubmitting = (isSubmitting: boolean) => void
 
-injectReducer('jenisSuratKeluarCreate', reducer)
+injectReducer('akunCreate', reducer)
 
-const JenisSuratKeluarCreate = () => {
+const AkunCreate = () => {
     const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
-    const jenisSuratKeluarData = useAppSelector(
-        (state) => state.jenisSuratKeluarCreate.data   // .jenisSuratKeluarEdit.data.jenisSuratKeluar.data
+    const akunData = useAppSelector(
+        (state) => state.akunCreate.data   // .akunEdit.data.akun.data
     )
     const loading = useAppSelector(
-        (state) => state.jenisSuratKeluarCreate.data.loading
+        (state) => state.akunCreate.data.loading
     )
 
     const validationSchema = Yup.object().shape({
         
 	kode: Yup.string().required('Kode Required'),
 	nama: Yup.string().required('Nama Required'),
-	format: Yup.string().required('Format Required'),
-	posisi: Yup.string().required('Posisi Required'),
+	pos_akun: Yup.string().required('Pos_Akun Required'),
+	pos_laporan: Yup.string().required('Pos_Laporan Required'),
+	saldo_awal_debet: Yup.string().required('Saldo_Awal_Debet Required'),
+	saldo_awal_kredit: Yup.string().required('Saldo_Awal_Kredit Required'),
     })
 
     const handleFormSubmit = async (
@@ -83,7 +89,7 @@ const JenisSuratKeluarCreate = () => {
     ) => {
         try {
             setSubmitting(true)
-            const success = await apiCreateJenisSuratKeluar(values)
+            const success = await apiCreateAkun(values)
             setSubmitting(false)
             if (success) {
                 popNotification('added')
@@ -106,7 +112,7 @@ const JenisSuratKeluarCreate = () => {
     }
 
     const handleDiscard = () => {
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/akuns/index')
     }
 
     const popNotification = (keyword: string) => {
@@ -122,7 +128,7 @@ const JenisSuratKeluarCreate = () => {
                 placement: 'top-center',
             }
         )
-        navigate('/app/jenissuratkeluars/index')
+        navigate('/app/akuns/index')
     }
     return (
         <>
@@ -177,29 +183,57 @@ const JenisSuratKeluarCreate = () => {
             </FormItem>
         </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
             <FormItem
-                label="Format"
-                invalid={(errors.format && touched.format) as boolean}
-                errorMessage={errors.format?.toString()}
+                label="Pos Akun"
+                invalid={(errors.pos_akun && touched.pos_akun) as boolean}
+                errorMessage={errors.pos_akun?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="format"
-                    placeholder="Format"
+                    name="pos_akun"
+                    placeholder="Pos Akun"
                     component={Input}
                 />
             </FormItem>
         </div>        <div className="col-span-1">
             <FormItem
-                label="Posisi"
-                invalid={(errors.posisi && touched.posisi) as boolean}
-                errorMessage={errors.posisi?.toString()}
+                label="Pos Laporan"
+                invalid={(errors.pos_laporan && touched.pos_laporan) as boolean}
+                errorMessage={errors.pos_laporan?.toString()}
             >
                 <Field
                     type="text"
                     autoComplete="off"
-                    name="posisi"
-                    placeholder="Posisi"
+                    name="pos_laporan"
+                    placeholder="Pos Laporan"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div><div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Saldo Awal Debet"
+                invalid={(errors.saldo_awal_debet && touched.saldo_awal_debet) as boolean}
+                errorMessage={errors.saldo_awal_debet?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="saldo_awal_debet"
+                    placeholder="Saldo Awal Debet"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Saldo Awal Kredit"
+                invalid={(errors.saldo_awal_kredit && touched.saldo_awal_kredit) as boolean}
+                errorMessage={errors.saldo_awal_kredit?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="saldo_awal_kredit"
+                    placeholder="Saldo Awal Kredit"
                     component={Input}
                 />
             </FormItem>
@@ -239,4 +273,4 @@ const JenisSuratKeluarCreate = () => {
     )
 }
 
-export default JenisSuratKeluarCreate
+export default AkunCreate

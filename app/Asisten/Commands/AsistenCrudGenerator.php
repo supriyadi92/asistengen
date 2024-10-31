@@ -292,6 +292,15 @@ class AsistenCrudGenerator extends GeneratorCommand
             $this->write($this->_getReactJsServicesPath($view), $viewTemplate);
         }
 
+        // React Routes
+        foreach (['react-route'] as $view) {  // , 'TableTools','DeleteConfirmation'
+            $viewTemplate = str_replace(
+                array_keys($replace), array_values($replace), $this->getStub("views/react/$view")
+            );
+
+            $this->write($this->_getReactJsRoutesPath($view), $viewTemplate);
+        }
+
         // foreach (['Index', 'Show', 'Edit', 'Create'] as $component) {
         //     $componentPath = $this->_getVueJsPath($folder.'/'.$component);
 
@@ -419,8 +428,7 @@ class AsistenCrudGenerator extends GeneratorCommand
         $tableTitleHeader = "\n";
         $form = "\n";
         $i=0;
-        $lenght = count($this->getFilteredColumns());
-
+        $length = count($this->getFilteredColumns());
         foreach ($this->getFilteredColumns() as $column) {
             $title = Str::title(str_replace('_', ' ', $column));
 
@@ -430,7 +438,7 @@ class AsistenCrudGenerator extends GeneratorCommand
             $tableTitleHeader .= $this->getField($title, $column, 'table-header').",\n";
             $form .= (($i % 2 == 0)?$this->_getBodyStart($this->options['stack']):'') 
                     .  $this->getField($title, $column)
-                    . ((($i % 2 == 1) || ($lenght===$i))?$this->_getBodyEnd($this->options['stack']):'');
+                    . ((($i % 2 == 1) || ($length-1===$i))?$this->_getBodyEnd($this->options['stack']):'');
             $i++;
         }
         // dd($tableTitleHeader);

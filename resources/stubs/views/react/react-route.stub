@@ -1,0 +1,24 @@
+    {
+        key: 'apps{{modelName}}.{{modelPluralLowerCase}}',
+        path: `${APP_PREFIX_PATH}/{{modelPluralLowerCase}}/index`,
+        component: lazy(() => import('@/views/{{modelPluralLowerCase}}/Index')),
+        authority: [ADMINISTRASI, USER],
+    },
+    {
+        key: 'apps{{modelName}}.{{modelNameLowerCase}}Create',
+        path: `${APP_PREFIX_PATH}/{{modelPluralLowerCase}}/{{modelView}}-create`,
+        component: lazy(() => import('@/views/{{modelPluralLowerCase}}/Create')),
+        authority: [ADMINISTRASI, USER],
+        meta: {
+            header: 'Add New {{modelTitle}}',
+        },
+    },
+    {
+        key: 'apps{{modelName}}.{{modelNameLowerCase}}Edit',
+        path: `${APP_PREFIX_PATH}/{{modelPluralLowerCase}}/{{modelView}}-edit/:{{modelNameLowerCase}}Id`,
+        component: lazy(() => import('@/views/{{modelPluralLowerCase}}/Edit')),
+        authority: [ADMINISTRASI, USER],
+        meta: {
+            header: 'Edit {{modelTitle}}',
+        },
+    },

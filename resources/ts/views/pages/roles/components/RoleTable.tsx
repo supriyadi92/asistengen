@@ -5,15 +5,15 @@ import DataTable from '@/components/shared/DataTable'
 import { HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
 import {
-    get{{modelName}}s,
+    getRoles,
     setTableData,
-    setSelected{{modelName}},
+    setSelectedRole,
     toggleDeleteConfirmation,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import {{modelName}}DeleteConfirmation from './{{modelName}}DeleteConfirmation'
+import RoleDeleteConfirmation from './RoleDeleteConfirmation'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
 import type {
@@ -22,24 +22,25 @@ import type {
     ColumnDef,
 } from '@/components/shared/DataTable'
 
-type {{modelName}} = {
-	id: string,
-    {{reactFields}}
+type Role = {
+    
+	'name': 'required|string',
+	'guard_name': 'required|string',
 }
 
-const ActionColumn = ({ row }: { row: {{modelName}} }) => {
+const ActionColumn = ({ row }: { row: Role }) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
     const navigate = useNavigate()
 
     const onEdit = () => {
         console.log(row);
-        navigate(`/app/{{modelPluralLowerCase}}/{{modelView}}-edit/${row.id}`)
+        navigate(`/app/roles/role-edit/${row.id}`)
     }
 
     const onDelete = () => {
         dispatch(toggleDeleteConfirmation(true))
-        dispatch(setSelected{{modelName}}(row))
+        dispatch(setSelectedRole(row))
     }
 
     return (
@@ -60,25 +61,44 @@ const ActionColumn = ({ row }: { row: {{modelName}} }) => {
     )
 }
 
-const {{modelName}}sTable = () => {
+const RolesColumn = ({ row }: { row: Role }) => {
+    const avatar = row.img ? (
+        <Avatar src={row.img} />
+    ) : (
+        <Avatar icon={<FiPackage />} />
+    )
+
+    return (
+        <div className="flex items-center">
+            {avatar}
+            <span className={`ml-2 rtl:mr-2 font-semibold`}>
+                {row.nomor_surat.length > 10 ?
+                    `${row.nomor_surat.substring(0, 10)}...` : row.nomor_surat
+                }
+            </span>
+        </div>
+    )
+}
+
+const RolesTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
 
     const dispatch = useAppDispatch()
 
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.tableData
+        (state) => state.rolesList.data.tableData
     )
 
     const filterData = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.filterData
+        (state) => state.rolesList.data.filterData
     )
 
     const loading = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.loading
+        (state) => state.rolesList.data.loading
     )
 
     const data = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.{{modelNameLowerCase}}List
+        (state) => state.rolesList.data.roleList
     )
 
     useEffect(() => {
@@ -98,16 +118,33 @@ const {{modelName}}sTable = () => {
     )
 
     const fetchData = () => {
-        dispatch(get{{modelName}}s({ pageIndex, pageSize, sort, query, filterData }))
+        dispatch(getRoles({ pageIndex, pageSize, sort, query, filterData }))
     }
 
-    const columns: ColumnDef<{{modelName}}>[] = useMemo(
+    const columns: ColumnDef<Role>[] = useMemo(
         () => [
             {
                 header: "No",
                 id: 'rowNumber',
             },            
-            {{tableTitleHeader}}
+            
+            {
+                header: "Name",
+                accessorKey: "name",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.name}</span>
+                },
+            },
+            {
+                header: "Guard Name",
+                accessorKey: "guard_name",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.guard_name}</span>
+                },
+            },
+
             {
                 header: 'Action',
                 id: 'action',
@@ -154,9 +191,9 @@ const {{modelName}}sTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
-            <{{modelName}}DeleteConfirmation />
+            <RoleDeleteConfirmation />
         </>
     )
 }
 
-export default {{modelName}}sTable
+export default RolesTable

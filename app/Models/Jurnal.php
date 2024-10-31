@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : JenisSuratKeluar.php
-// Created     : Senin, 21 Okt 2024
-// Last Update : Senin, 21 Okt 2024
+// File name   : Jurnal.php
+// Created     : Senin, 28 Okt 2024
+// Last Update : Senin, 28 Okt 2024
 //
-// Description : Model JenisSuratKeluar.
+// Description : Model Jurnal.
 //
 // Author: Supriyadi
 //
@@ -29,18 +29,29 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class JenisSuratKeluar
+ * Class Jurnal
  *
  * @property $id
- * @property $kode
- * @property $nama
- * @property $format
- * @property $posisi
+ * @property $tanggal
+ * @property $nomor_bukti
+ * @property $kode_pembantu
+ * @property $uraian
+ * @property $kategori_jurnal_id
+ * @property $akun_debet_id
+ * @property $akun_kredit_id
+ * @property $jumlah_debet
+ * @property $jumlah_kredit
+ * @property $keterangan
+ * @property $posting_id
+ * @property $created_by
+ * @property $created_at
+ * @property $updated_by
+ * @property $updated_at
  *
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class JenisSuratKeluar extends Authenticatable 
+class Jurnal extends Authenticatable 
 {
     use HasApiTokens, Notifiable, HasRoles;
     
@@ -49,8 +60,8 @@ class JenisSuratKeluar extends Authenticatable
      *
      * @var array
      */
-	protected $table = 'jenis_surat_keluars';
-    protected $fillable = ['kode', 'nama', 'format', 'posisi'];
+	protected $table = 'jurnals';
+    protected $fillable = ['tanggal', 'nomor_bukti', 'kode_pembantu', 'uraian', 'kategori_jurnal_id', 'akun_debet_id', 'akun_kredit_id', 'jumlah_debet', 'jumlah_kredit', 'keterangan', 'posting_id'];
 
     /**
      * The attributes that should be hidden for arrays.

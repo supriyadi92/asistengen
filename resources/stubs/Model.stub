@@ -26,24 +26,25 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Support\Facades\DB;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * Class {{modelName}}
- {{properties}}
- * @package App
+ * @package App\Models
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class {{modelName}} extends Authenticatable 
 {
     use HasApiTokens, Notifiable, HasRoles;
+	use LogsActivity;
     {{softDeletes}}
     /**
      * The attributes that are mass assignable.
      *
      * @var array
      */
-	protected $table = 'surat_masuks';
+	protected $table = '{{modelTable}}s';
     protected $fillable = [{{fillable}}];
 
     /**
@@ -53,6 +54,16 @@ class {{modelName}} extends Authenticatable
      */
     protected $hidden = [
     ];
+	
+	public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+                // ->logOnly(['tanggal', 'kode_pembantu','uraian'])
+                ->logFillable()
+                ->logOnlyDirty()
+                ->setDescriptionForEvent(fn(string $eventName) => "This model has been {$eventName}")
+                ->useLogName('{{modelName}}');
+    }
 
     /**
      * The attributes that should be cast to native types.

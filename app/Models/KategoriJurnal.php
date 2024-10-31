@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : JenisSuratKeluar.php
-// Created     : Senin, 21 Okt 2024
-// Last Update : Senin, 21 Okt 2024
+// File name   : KategoriJurnal.php
+// Created     : Jumat, 25 Okt 2024
+// Last Update : Jumat, 25 Okt 2024
 //
-// Description : Model JenisSuratKeluar.
+// Description : Model KategoriJurnal.
 //
 // Author: Supriyadi
 //
@@ -29,18 +29,16 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class JenisSuratKeluar
+ * Class KategoriJurnal
  *
  * @property $id
  * @property $kode
  * @property $nama
- * @property $format
- * @property $posisi
  *
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class JenisSuratKeluar extends Authenticatable 
+class KategoriJurnal extends Authenticatable 
 {
     use HasApiTokens, Notifiable, HasRoles;
     
@@ -49,8 +47,8 @@ class JenisSuratKeluar extends Authenticatable
      *
      * @var array
      */
-	protected $table = 'jenis_surat_keluars';
-    protected $fillable = ['kode', 'nama', 'format', 'posisi'];
+	protected $table = 'kategori_jurnals';
+    protected $fillable = ['kode', 'nama'];
 
     /**
      * The attributes that should be hidden for arrays.

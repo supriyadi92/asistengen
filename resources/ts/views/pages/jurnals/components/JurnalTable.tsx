@@ -5,15 +5,15 @@ import DataTable from '@/components/shared/DataTable'
 import { HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
 import {
-    getJenisSuratKeluars,
+    getJurnals,
     setTableData,
-    setSelectedJenisSuratKeluar,
+    setSelectedJurnal,
     toggleDeleteConfirmation,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import JenisSuratKeluarDeleteConfirmation from './JenisSuratKeluarDeleteConfirmation'
+import JurnalDeleteConfirmation from './JurnalDeleteConfirmation'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
 import type {
@@ -22,27 +22,35 @@ import type {
     ColumnDef,
 } from '@/components/shared/DataTable'
 
-type JenisSuratKeluar = {
+type Jurnal = {
+	id: string,
     
-	'kode': 'string',
-	'nama': 'required|string',
-	'format': 'string',
-	'posisi': 'int',
+	tanggal: string,
+	nomor_bukti: string,
+	kode_pembantu: string,
+	uraian: string,
+	kategori_jurnal_id: number,
+	akun_debet_id: number,
+	akun_kredit_id: number,
+	jumlah_debet: number,
+	jumlah_kredit: number,
+	keterangan: string,
+	posting_id: number,
 }
 
-const ActionColumn = ({ row }: { row: JenisSuratKeluar }) => {
+const ActionColumn = ({ row }: { row: Jurnal }) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
     const navigate = useNavigate()
 
     const onEdit = () => {
         console.log(row);
-        navigate(`/app/jenissuratkeluars/jenis-surat-keluar-edit/${row.id}`)
+        navigate(`/app/jurnals/jurnal-edit/${row.id}`)
     }
 
     const onDelete = () => {
         dispatch(toggleDeleteConfirmation(true))
-        dispatch(setSelectedJenisSuratKeluar(row))
+        dispatch(setSelectedJurnal(row))
     }
 
     return (
@@ -63,44 +71,25 @@ const ActionColumn = ({ row }: { row: JenisSuratKeluar }) => {
     )
 }
 
-const JenisSuratKeluarsColumn = ({ row }: { row: JenisSuratKeluar }) => {
-    const avatar = row.img ? (
-        <Avatar src={row.img} />
-    ) : (
-        <Avatar icon={<FiPackage />} />
-    )
-
-    return (
-        <div className="flex items-center">
-            {avatar}
-            <span className={`ml-2 rtl:mr-2 font-semibold`}>
-                {row.nomor_surat.length > 10 ?
-                    `${row.nomor_surat.substring(0, 10)}...` : row.nomor_surat
-                }
-            </span>
-        </div>
-    )
-}
-
-const JenisSuratKeluarsTable = () => {
+const JurnalsTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
 
     const dispatch = useAppDispatch()
 
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.jenisSuratKeluarsList.data.tableData
+        (state) => state.jurnalsList.data.tableData
     )
 
     const filterData = useAppSelector(
-        (state) => state.jenisSuratKeluarsList.data.filterData
+        (state) => state.jurnalsList.data.filterData
     )
 
     const loading = useAppSelector(
-        (state) => state.jenisSuratKeluarsList.data.loading
+        (state) => state.jurnalsList.data.loading
     )
 
     const data = useAppSelector(
-        (state) => state.jenisSuratKeluarsList.data.jenisSuratKeluarList
+        (state) => state.jurnalsList.data.jurnalList
     )
 
     useEffect(() => {
@@ -120,10 +109,10 @@ const JenisSuratKeluarsTable = () => {
     )
 
     const fetchData = () => {
-        dispatch(getJenisSuratKeluars({ pageIndex, pageSize, sort, query, filterData }))
+        dispatch(getJurnals({ pageIndex, pageSize, sort, query, filterData }))
     }
 
-    const columns: ColumnDef<JenisSuratKeluar>[] = useMemo(
+    const columns: ColumnDef<Jurnal>[] = useMemo(
         () => [
             {
                 header: "No",
@@ -131,35 +120,91 @@ const JenisSuratKeluarsTable = () => {
             },            
             
             {
-                header: "Kode",
-                accessorKey: "kode",
+                header: "Tanggal",
+                accessorKey: "tanggal",
                 cell: (props) => {
                     const row = props.row.original
-                    return <span className="capitalize">{row.kode}</span>
+                    return <span className="capitalize">{row.tanggal}</span>
                 },
             },
             {
-                header: "Nama",
-                accessorKey: "nama",
+                header: "Nomor Bukti",
+                accessorKey: "nomor_bukti",
                 cell: (props) => {
                     const row = props.row.original
-                    return <span className="capitalize">{row.nama}</span>
+                    return <span className="capitalize">{row.nomor_bukti}</span>
                 },
             },
             {
-                header: "Format",
-                accessorKey: "format",
+                header: "Kode Pembantu",
+                accessorKey: "kode_pembantu",
                 cell: (props) => {
                     const row = props.row.original
-                    return <span className="capitalize">{row.format}</span>
+                    return <span className="capitalize">{row.kode_pembantu}</span>
                 },
             },
             {
-                header: "Posisi",
-                accessorKey: "posisi",
+                header: "Uraian",
+                accessorKey: "uraian",
                 cell: (props) => {
                     const row = props.row.original
-                    return <span className="capitalize">{row.posisi}</span>
+                    return <span className="capitalize">{row.uraian}</span>
+                },
+            },
+            {
+                header: "Kategori Jurnal Id",
+                accessorKey: "kategori_jurnal_id",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.kategori_jurnal_id}</span>
+                },
+            },
+            {
+                header: "Akun Debet Id",
+                accessorKey: "akun_debet_id",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.akun_debet_id}</span>
+                },
+            },
+            {
+                header: "Akun Kredit Id",
+                accessorKey: "akun_kredit_id",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.akun_kredit_id}</span>
+                },
+            },
+            {
+                header: "Jumlah Debet",
+                accessorKey: "jumlah_debet",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.jumlah_debet}</span>
+                },
+            },
+            {
+                header: "Jumlah Kredit",
+                accessorKey: "jumlah_kredit",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.jumlah_kredit}</span>
+                },
+            },
+            {
+                header: "Keterangan",
+                accessorKey: "keterangan",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.keterangan}</span>
+                },
+            },
+            {
+                header: "Posting Id",
+                accessorKey: "posting_id",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.posting_id}</span>
                 },
             },
 
@@ -209,9 +254,9 @@ const JenisSuratKeluarsTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
-            <JenisSuratKeluarDeleteConfirmation />
+            <JurnalDeleteConfirmation />
         </>
     )
 }
 
-export default JenisSuratKeluarsTable
+export default JurnalsTable

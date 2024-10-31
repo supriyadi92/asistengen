@@ -9,7 +9,7 @@ const {{modelName}}TableTools = () => {
             <{{modelName}}TableSearch />            
             <Link
                 className="block lg:inline-block md:mb-0 mb-4"
-                to="/app/suratmasuks/surat-create"
+                to="/app/{{modelPluralLowerCase}}/{{modelView}}-create"
             >
                 <Button block variant="solid" size="sm" icon={<HiPlusCircle />}>
                     Create {{modelTitle}}

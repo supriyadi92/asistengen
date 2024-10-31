@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : {{modelName}}Controller.php
-// Created     : {{createdDate}}
-// Last Update : {{updatedDate}}
+// File name   : RoleController.php
+// Created     : Senin, 21 Okt 2024
+// Last Update : Senin, 21 Okt 2024
 //
-// Description : Data {{modelName}}.
+// Description : Data Role.
 //
 // Author: Supriyadi
 //
@@ -19,7 +19,7 @@
 
 
 
-namespace {{apiControllerNamespace}};
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,17 +28,17 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 // use DB;
 use Illuminate\Support\Facades\DB;
-use App\Models\{{modelName}};
+use App\Models\Role;
 
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Collection; // at the top
 use Illuminate\Support\Facades\Auth;
 
-class {{modelName}}Controller extends BaseController
+class RoleController extends BaseController
 {
-    protected $column_order = array(null, {{fillable}},'id'); //field yang ada di table user
-    protected $column_search = array({{fillable}}); //field yang diizin untuk pencarian 
+    protected $column_order = array(null, 'name', 'guard_name','id'); //field yang ada di table user
+    protected $column_search = array('name', 'guard_name'); //field yang diizin untuk pencarian 
     protected $order = array('id' => 'desc'); // default order 
 
     /**
@@ -48,7 +48,7 @@ class {{modelName}}Controller extends BaseController
      */
     function __construct()
     {
-        $table = new {{modelName}};
+        $table = new Role;
         $this->table = $table->getTable();
     }
     /**
@@ -65,13 +65,13 @@ class {{modelName}}Controller extends BaseController
             "recordsFiltered" => intval($this->count_all()), 
             "data"            => $data,  
             );            
-        return $this->sendResponse($json_data, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($json_data, 'Role retrieved successfully.');
     }
     
     public function getAll(Request $request)
     {
-        ${{modelNameLowerCase}} = {{modelName}}::where('is_aktif', '1')->get(['id',{{fillable}}]);
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} List retrieved successfully.');
+        $role = Role::where('is_aktif', '1')->get(['id','name', 'guard_name']);
+        return $this->sendResponse($role, 'Role List retrieved successfully.');
     }
 
     /**
@@ -84,7 +84,9 @@ class {{modelName}}Controller extends BaseController
     {
         //
         $validator = Validator::make($request->all(), [
-            {{rules}}
+            
+			'name' => 'required|string',
+			'guard_name' => 'required|string',
         ]);
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());   
@@ -93,8 +95,8 @@ class {{modelName}}Controller extends BaseController
             'created_by' => auth()->user()->id
         ]);
         $input = $request->all();
-        ${{modelNameLowerCase}} = {{modelName}}::create($input);
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} created successfully.');
+        $role = Role::create($input);
+        return $this->sendResponse($role, 'Role created successfully.');
     }
 
     /**
@@ -106,21 +108,21 @@ class {{modelName}}Controller extends BaseController
     public function show($id)
     {
         //\
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (is_null(${{modelNameLowerCase}})) {
-            return $this->sendError('{{modelName}} not found.');
+        $role = Role::find($id); 
+        if (is_null($role)) {
+            return $this->sendError('Role not found.');
         }
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($role, 'Role retrieved successfully.');
     }
 
     // edit post
     public function edit($id)
     {
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (is_null(${{modelNameLowerCase}})) {
-            return $this->sendError('{{modelName}} not found.');
+        $role = Role::find($id); 
+        if (is_null($role)) {
+            return $this->sendError('Role not found.');
         }
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($role, 'Role retrieved successfully.');
     }
 
     /**
@@ -133,12 +135,14 @@ class {{modelName}}Controller extends BaseController
     public function update(Request $request, $id)
     {
         //
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-		if (!${{modelNameLowerCase}}) {
-			return $this->sendError('{{modelName}} with id ' . $id . ' cannot be found.');
+        $role = Role::find($id); 
+		if (!$role) {
+			return $this->sendError('Role with id ' . $id . ' cannot be found.');
 		}        
 		$validator = Validator::make($request->all(), [
-            {{rules}}
+            
+			'name' => 'required|string',
+			'guard_name' => 'required|string',
 		]);
 		if($validator->fails()){
 			return $this->sendError('Validation Error.', $validator->errors());   
@@ -147,11 +151,11 @@ class {{modelName}}Controller extends BaseController
         $request->request->add([
             'updated_by' => auth()->user()->id
         ]);
-		$updated = ${{modelNameLowerCase}}->fill($request->all())->save();
+		$updated = $role->fill($request->all())->save();
 		if ($updated) {
-			return $this->sendResponse($updated, '{{modelName}} updated successfully.');
+			return $this->sendResponse($updated, 'Role updated successfully.');
 		} else {
-			return $this->sendError('{{modelName}} with id ' . $id . ' could not be updated.'); 
+			return $this->sendError('Role with id ' . $id . ' could not be updated.'); 
 		}    
     }
 
@@ -164,14 +168,14 @@ class {{modelName}}Controller extends BaseController
     public function destroy($id)
     {
         // get current logged in user
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (!${{modelNameLowerCase}}) {
-            return $this->sendError('{{modelName}} with id ' . $id . ' cannot be found.');
+        $role = Role::find($id); 
+        if (!$role) {
+            return $this->sendError('Role with id ' . $id . ' cannot be found.');
         }         
-        if (${{modelNameLowerCase}}->delete()) {
-            return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} deleted successfully.');
+        if ($role->delete()) {
+            return $this->sendResponse($role, 'Role deleted successfully.');
         } else {
-            return $this->sendError('{{modelName}} with id ' . $id . ' could not be deleted.');  
+            return $this->sendError('Role with id ' . $id . ' could not be deleted.');  
         }
         
         

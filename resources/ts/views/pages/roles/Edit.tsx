@@ -5,12 +5,13 @@ import DoubleSidedImage from '@/components/shared/DoubleSidedImage'
 import toast from '@/components/ui/toast'
 import Notification from '@/components/ui/Notification'
 import {
-    get{{modelName}},
-    update{{modelName}},
+    getRole,
+    getJenisRoles,
+    updateRole,
     useAppDispatch,
     useAppSelector,
-} from '../{{modelView}}s/store'
-import { apiUpdate{{modelName}} } from '@/services/{{modelName}}sService'
+} from '../roles/store'
+import { apiUpdateRole } from '@/services/RolesService'
 import reducer from './store'
 import { injectReducer } from '@/store'
 import { useLocation, useNavigate } from 'react-router-dom'
@@ -31,49 +32,53 @@ import { Field, FormikErrors, FormikTouched, FieldProps } from 'formik'
 import isEmpty from 'lodash/isEmpty'
 
 type FormFieldsName = {
-    {{reactFields}}
+    
+	'name': 'required|string',
+	'guard_name': 'required|string',
 }
 
 type SetSubmitting = (isSubmitting: boolean) => void
 
-injectReducer('{{modelNameLowerCase}}Edit', reducer)
+injectReducer('roleEdit', reducer)
 
-const {{modelName}}Edit = () => {
+const RoleEdit = () => {
     const dispatch = useAppDispatch()
 
     const location = useLocation()
     const navigate = useNavigate()
 
-    const {{modelNameLowerCase}}Data = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.{{modelNameLowerCase}}.data
+    const roleData = useAppSelector(
+        (state) => state.roleEdit.data.role.data
     )
     const loading = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.loading
+        (state) => state.roleEdit.data.loading
     )
     const fetchData = (data: { id: string }) => {
-        dispatch(get{{modelName}}(data))
+        dispatch(getRole(data))
 
     }
 
-    const jenis{{modelName}}s = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}Edit.data.jenis{{modelName}}List
+    const jenisRoles = useAppSelector(
+        (state) => state.roleEdit.data.jenisRoleList
     )
 
-    const jenis{{modelName}}Opts = jenis{{modelName}}s ? jenis{{modelName}}s.map(function (jenis: any) {
+    const jenisRoleOpts = jenisRoles ? jenisRoles.map(function (jenis: any) {
         return { value: jenis.id, label: jenis.nama };
     }) : { value: '', label: '' }
 
     const validationSchema = Yup.object().shape({
-        {{validationFields}}
+        
+	name: Yup.string().required('Name Required'),
+	guard_name: Yup.string().required('Guard_Name Required'),
     })
 
     const handleFormSubmit = async (
-        values: FormFieldsName,
+        values: FormModel,
         setSubmitting: SetSubmitting
     ) => {
         try {
             setSubmitting(true)
-            const success = await apiUpdate{{modelName}}(values)
+            const success = await apiUpdateRole(values)
             setSubmitting(false)
             if (success) {
                 popNotification('updated')
@@ -96,7 +101,7 @@ const {{modelName}}Edit = () => {
     }
 
     const handleDiscard = () => {
-        navigate('/app/{{modelPluralLowerCase}}/index')
+        navigate('/app/roles/index')
     }
 
     const popNotification = (keyword: string) => {
@@ -106,13 +111,13 @@ const {{modelName}}Edit = () => {
                 type="success"
                 duration={2500}
             >
-                {{modelTitle}} successfuly {keyword}
+                Product successfuly {keyword}
             </Notification>,
             {
                 placement: 'top-center',
             }
         )
-        navigate('/app/{{modelPluralLowerCase}}/index')
+        navigate('/app/roles/index')
     }
 
     useEffect(() => {
@@ -127,13 +132,13 @@ const {{modelName}}Edit = () => {
     return (
         <>
             <Loading loading={loading}>
-                {!isEmpty({{modelNameLowerCase}}Data) && (
+                {!isEmpty(roleData) && (
                     <>
                         <Formik
                             enableReinitialize={true}
-                            initialValues={{{modelNameLowerCase}}Data}
+                            initialValues={roleData}
                             validationSchema={validationSchema}
-                            onSubmit={(values: FormFieldsName, { setSubmitting }) => {
+                            onSubmit={(values: FormModel, { setSubmitting }) => {
                                 const formData = cloneDeep(values)
                                 handleFormSubmit(formData, setSubmitting);
                             }}
@@ -149,7 +154,36 @@ const {{modelName}}Edit = () => {
                                         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                                             <div className="lg:col-span-2">
                                                 <AdaptableCard divider isLastChild className="mb-4">                    
-                                                        {{form}}                   
+                                                        
+<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>        <div className="col-span-1">
+            <FormItem
+                label="Name"
+                invalid={(errors.name && touched.name) as boolean}
+                errorMessage={errors.name?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="name"
+                    placeholder="Name"
+                    component={Input}
+                />
+            </FormItem>
+        </div>        <div className="col-span-1">
+            <FormItem
+                label="Guard Name"
+                invalid={(errors.guard_name && touched.guard_name) as boolean}
+                errorMessage={errors.guard_name?.toString()}
+            >
+                <Field
+                    type="text"
+                    autoComplete="off"
+                    name="guard_name"
+                    placeholder="Guard Name"
+                    component={Input}
+                />
+            </FormItem>
+        </div></div>                   
                                                 </AdaptableCard>
                                             </div>
                                         </div>
@@ -184,7 +218,7 @@ const {{modelName}}Edit = () => {
                     </>
                 )}
             </Loading>
-            {!loading && isEmpty({{modelNameLowerCase}}Data) && (
+            {!loading && isEmpty(roleData) && (
                 <div className="h-full flex flex-col items-center justify-top">
                     <DoubleSidedImage
                         src="/img/others/img-2.png"
@@ -198,4 +232,4 @@ const {{modelName}}Edit = () => {
     )
 }
 
-export default {{modelName}}Edit
+export default RoleEdit

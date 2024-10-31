@@ -62,8 +62,7 @@ const {{modelName}}Create = () => {
     )
 
     const validationSchema = Yup.object().shape({
-        nomor_surat: Yup.string().required('Nomor Surat Required'),
-        tanggal_surat: Yup.string().required('Tanggal Surat Required'),
+        {{validationFields}}
     })
 
     const handleFormSubmit = async (

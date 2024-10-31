@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : JenisSuratKeluar.php
-// Created     : Senin, 21 Okt 2024
-// Last Update : Senin, 21 Okt 2024
+// File name   : Akun.php
+// Created     : Jumat, 25 Okt 2024
+// Last Update : Jumat, 25 Okt 2024
 //
-// Description : Model JenisSuratKeluar.
+// Description : Model Akun.
 //
 // Author: Supriyadi
 //
@@ -29,18 +29,24 @@ use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Support\Facades\DB;
 
 /**
- * Class JenisSuratKeluar
+ * Class Akun
  *
  * @property $id
  * @property $kode
  * @property $nama
- * @property $format
- * @property $posisi
+ * @property $pos_akun
+ * @property $pos_laporan
+ * @property $saldo_awal_debet
+ * @property $saldo_awal_kredit
+ * @property $created_by
+ * @property $created_at
+ * @property $updated_by
+ * @property $updated_at
  *
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
-class JenisSuratKeluar extends Authenticatable 
+class Akun extends Authenticatable 
 {
     use HasApiTokens, Notifiable, HasRoles;
     
@@ -49,8 +55,8 @@ class JenisSuratKeluar extends Authenticatable
      *
      * @var array
      */
-	protected $table = 'jenis_surat_keluars';
-    protected $fillable = ['kode', 'nama', 'format', 'posisi'];
+	protected $table = 'akuns';
+    protected $fillable = ['kode', 'nama', 'pos_akun', 'pos_laporan', 'saldo_awal_debet', 'saldo_awal_kredit'];
 
     /**
      * The attributes that should be hidden for arrays.

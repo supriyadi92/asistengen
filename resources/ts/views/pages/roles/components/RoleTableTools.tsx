@@ -1,22 +1,22 @@
 import Button from '@/components/ui/Button'
 import { HiDownload, HiPlusCircle } from 'react-icons/hi'
-import JenisSuratKeluarTableSearch from './JenisSuratKeluarTableSearch'
+import RoleTableSearch from './RoleTableSearch'
 import { Link } from 'react-router-dom'
 
-const JenisSuratKeluarTableTools = () => {
+const RoleTableTools = () => {
     return (
         <div className="flex flex-col lg:flex-row lg:items-center">
-            <JenisSuratKeluarTableSearch />            
+            <RoleTableSearch />            
             <Link
                 className="block lg:inline-block md:mb-0 mb-4"
-                to="/app/jenissuratkeluars/jenis-surat-keluar-create"
+                to="/app/roles/role-create"
             >
                 <Button block variant="solid" size="sm" icon={<HiPlusCircle />}>
-                    Create Jenis Surat Keluar
+                    Create Role
                 </Button>
             </Link>
         </div>
     )
 }
 
-export default JenisSuratKeluarTableTools
+export default RoleTableTools

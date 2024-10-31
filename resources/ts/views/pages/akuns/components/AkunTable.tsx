@@ -5,15 +5,15 @@ import DataTable from '@/components/shared/DataTable'
 import { HiOutlinePencil, HiOutlineTrash } from 'react-icons/hi'
 import { FiPackage } from 'react-icons/fi'
 import {
-    get{{modelName}}s,
+    getAkuns,
     setTableData,
-    setSelected{{modelName}},
+    setSelectedAkun,
     toggleDeleteConfirmation,
     useAppDispatch,
     useAppSelector,
 } from '../store'
 import useThemeClass from '@/utils/hooks/useThemeClass'
-import {{modelName}}DeleteConfirmation from './{{modelName}}DeleteConfirmation'
+import AkunDeleteConfirmation from './AkunDeleteConfirmation'
 import { useNavigate } from 'react-router-dom'
 import cloneDeep from 'lodash/cloneDeep'
 import type {
@@ -22,24 +22,29 @@ import type {
     ColumnDef,
 } from '@/components/shared/DataTable'
 
-type {{modelName}} = {
-	id: string,
-    {{reactFields}}
+type Akun = {
+    
+	kode: required|string,
+	nama: string,
+	pos_akun: string,
+	pos_laporan: string,
+	saldo_awal_debet: number,
+	saldo_awal_kredit: number,
 }
 
-const ActionColumn = ({ row }: { row: {{modelName}} }) => {
+const ActionColumn = ({ row }: { row: Akun }) => {
     const dispatch = useAppDispatch()
     const { textTheme } = useThemeClass()
     const navigate = useNavigate()
 
     const onEdit = () => {
         console.log(row);
-        navigate(`/app/{{modelPluralLowerCase}}/{{modelView}}-edit/${row.id}`)
+        navigate(`/app/akuns/akun-edit/${row.id}`)
     }
 
     const onDelete = () => {
         dispatch(toggleDeleteConfirmation(true))
-        dispatch(setSelected{{modelName}}(row))
+        dispatch(setSelectedAkun(row))
     }
 
     return (
@@ -60,25 +65,44 @@ const ActionColumn = ({ row }: { row: {{modelName}} }) => {
     )
 }
 
-const {{modelName}}sTable = () => {
+const AkunsColumn = ({ row }: { row: Akun }) => {
+    const avatar = row.img ? (
+        <Avatar src={row.img} />
+    ) : (
+        <Avatar icon={<FiPackage />} />
+    )
+
+    return (
+        <div className="flex items-center">
+            {avatar}
+            <span className={`ml-2 rtl:mr-2 font-semibold`}>
+                {row.nomor_surat.length > 10 ?
+                    `${row.nomor_surat.substring(0, 10)}...` : row.nomor_surat
+                }
+            </span>
+        </div>
+    )
+}
+
+const AkunsTable = () => {
     const tableRef = useRef<DataTableResetHandle>(null)
 
     const dispatch = useAppDispatch()
 
     const { pageIndex, pageSize, sort, query, total } = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.tableData
+        (state) => state.akunsList.data.tableData
     )
 
     const filterData = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.filterData
+        (state) => state.akunsList.data.filterData
     )
 
     const loading = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.loading
+        (state) => state.akunsList.data.loading
     )
 
     const data = useAppSelector(
-        (state) => state.{{modelNameLowerCase}}sList.data.{{modelNameLowerCase}}List
+        (state) => state.akunsList.data.akunList
     )
 
     useEffect(() => {
@@ -98,16 +122,65 @@ const {{modelName}}sTable = () => {
     )
 
     const fetchData = () => {
-        dispatch(get{{modelName}}s({ pageIndex, pageSize, sort, query, filterData }))
+        dispatch(getAkuns({ pageIndex, pageSize, sort, query, filterData }))
     }
 
-    const columns: ColumnDef<{{modelName}}>[] = useMemo(
+    const columns: ColumnDef<Akun>[] = useMemo(
         () => [
             {
                 header: "No",
                 id: 'rowNumber',
             },            
-            {{tableTitleHeader}}
+            
+            {
+                header: "Kode",
+                accessorKey: "kode",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.kode}</span>
+                },
+            },
+            {
+                header: "Nama",
+                accessorKey: "nama",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.nama}</span>
+                },
+            },
+            {
+                header: "Pos Akun",
+                accessorKey: "pos_akun",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.pos_akun}</span>
+                },
+            },
+            {
+                header: "Pos Laporan",
+                accessorKey: "pos_laporan",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.pos_laporan}</span>
+                },
+            },
+            {
+                header: "Saldo Awal Debet",
+                accessorKey: "saldo_awal_debet",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.saldo_awal_debet}</span>
+                },
+            },
+            {
+                header: "Saldo Awal Kredit",
+                accessorKey: "saldo_awal_kredit",
+                cell: (props) => {
+                    const row = props.row.original
+                    return <span className="capitalize">{row.saldo_awal_kredit}</span>
+                },
+            },
+
             {
                 header: 'Action',
                 id: 'action',
@@ -154,9 +227,9 @@ const {{modelName}}sTable = () => {
                 onSelectChange={onSelectChange}
                 onSort={onSort}
             />
-            <{{modelName}}DeleteConfirmation />
+            <AkunDeleteConfirmation />
         </>
     )
 }
 
-export default {{modelName}}sTable
+export default AkunsTable

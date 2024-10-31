@@ -2,11 +2,11 @@
 // This file was automatically created by DejavaGen 1.00e
 
 //============================================================+
-// File name   : {{modelName}}Controller.php
-// Created     : {{createdDate}}
-// Last Update : {{updatedDate}}
+// File name   : JurnalController.php
+// Created     : Senin, 28 Okt 2024
+// Last Update : Senin, 28 Okt 2024
 //
-// Description : Data {{modelName}}.
+// Description : Data Jurnal.
 //
 // Author: Supriyadi
 //
@@ -19,7 +19,7 @@
 
 
 
-namespace {{apiControllerNamespace}};
+namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -28,17 +28,17 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 // use DB;
 use Illuminate\Support\Facades\DB;
-use App\Models\{{modelName}};
+use App\Models\Jurnal;
 
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Collection; // at the top
 use Illuminate\Support\Facades\Auth;
 
-class {{modelName}}Controller extends BaseController
+class JurnalController extends BaseController
 {
-    protected $column_order = array(null, {{fillable}},'id'); //field yang ada di table user
-    protected $column_search = array({{fillable}}); //field yang diizin untuk pencarian 
+    protected $column_order = array(null, 'tanggal', 'nomor_bukti', 'kode_pembantu', 'uraian', 'kategori_jurnal_id', 'akun_debet_id', 'akun_kredit_id', 'jumlah_debet', 'jumlah_kredit', 'keterangan', 'posting_id','id'); //field yang ada di table user
+    protected $column_search = array('tanggal', 'nomor_bukti', 'kode_pembantu', 'uraian', 'kategori_jurnal_id', 'akun_debet_id', 'akun_kredit_id', 'jumlah_debet', 'jumlah_kredit', 'keterangan', 'posting_id'); //field yang diizin untuk pencarian 
     protected $order = array('id' => 'desc'); // default order 
 
     /**
@@ -48,7 +48,7 @@ class {{modelName}}Controller extends BaseController
      */
     function __construct()
     {
-        $table = new {{modelName}};
+        $table = new Jurnal;
         $this->table = $table->getTable();
     }
     /**
@@ -65,13 +65,13 @@ class {{modelName}}Controller extends BaseController
             "recordsFiltered" => intval($this->count_all()), 
             "data"            => $data,  
             );            
-        return $this->sendResponse($json_data, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($json_data, 'Jurnal retrieved successfully.');
     }
     
     public function getAll(Request $request)
     {
-        ${{modelNameLowerCase}} = {{modelName}}::where('is_aktif', '1')->get(['id',{{fillable}}]);
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} List retrieved successfully.');
+        $jurnal = Jurnal::where('is_aktif', '1')->get(['id','tanggal', 'nomor_bukti', 'kode_pembantu', 'uraian', 'kategori_jurnal_id', 'akun_debet_id', 'akun_kredit_id', 'jumlah_debet', 'jumlah_kredit', 'keterangan', 'posting_id']);
+        return $this->sendResponse($jurnal, 'Jurnal List retrieved successfully.');
     }
 
     /**
@@ -84,7 +84,18 @@ class {{modelName}}Controller extends BaseController
     {
         //
         $validator = Validator::make($request->all(), [
-            {{rules}}
+            
+			'tanggal' => 'string',
+			'nomor_bukti' => 'string',
+			'kode_pembantu' => 'string',
+			'uraian' => 'string',
+			'kategori_jurnal_id' => 'number',
+			'akun_debet_id' => 'number',
+			'akun_kredit_id' => 'number',
+			'jumlah_debet' => 'number',
+			'jumlah_kredit' => 'number',
+			'keterangan' => 'string',
+			'posting_id' => 'number',
         ]);
         if($validator->fails()){
             return $this->sendError('Validation Error.', $validator->errors());   
@@ -93,8 +104,8 @@ class {{modelName}}Controller extends BaseController
             'created_by' => auth()->user()->id
         ]);
         $input = $request->all();
-        ${{modelNameLowerCase}} = {{modelName}}::create($input);
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} created successfully.');
+        $jurnal = Jurnal::create($input);
+        return $this->sendResponse($jurnal, 'Jurnal created successfully.');
     }
 
     /**
@@ -106,21 +117,21 @@ class {{modelName}}Controller extends BaseController
     public function show($id)
     {
         //\
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (is_null(${{modelNameLowerCase}})) {
-            return $this->sendError('{{modelName}} not found.');
+        $jurnal = Jurnal::find($id); 
+        if (is_null($jurnal)) {
+            return $this->sendError('Jurnal not found.');
         }
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($jurnal, 'Jurnal retrieved successfully.');
     }
 
     // edit post
     public function edit($id)
     {
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (is_null(${{modelNameLowerCase}})) {
-            return $this->sendError('{{modelName}} not found.');
+        $jurnal = Jurnal::find($id); 
+        if (is_null($jurnal)) {
+            return $this->sendError('Jurnal not found.');
         }
-        return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} retrieved successfully.');
+        return $this->sendResponse($jurnal, 'Jurnal retrieved successfully.');
     }
 
     /**
@@ -133,12 +144,23 @@ class {{modelName}}Controller extends BaseController
     public function update(Request $request, $id)
     {
         //
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-		if (!${{modelNameLowerCase}}) {
-			return $this->sendError('{{modelName}} with id ' . $id . ' cannot be found.');
+        $jurnal = Jurnal::find($id); 
+		if (!$jurnal) {
+			return $this->sendError('Jurnal with id ' . $id . ' cannot be found.');
 		}        
 		$validator = Validator::make($request->all(), [
-            {{rules}}
+            
+			'tanggal' => 'string',
+			'nomor_bukti' => 'string',
+			'kode_pembantu' => 'string',
+			'uraian' => 'string',
+			'kategori_jurnal_id' => 'number',
+			'akun_debet_id' => 'number',
+			'akun_kredit_id' => 'number',
+			'jumlah_debet' => 'number',
+			'jumlah_kredit' => 'number',
+			'keterangan' => 'string',
+			'posting_id' => 'number',
 		]);
 		if($validator->fails()){
 			return $this->sendError('Validation Error.', $validator->errors());   
@@ -147,11 +169,11 @@ class {{modelName}}Controller extends BaseController
         $request->request->add([
             'updated_by' => auth()->user()->id
         ]);
-		$updated = ${{modelNameLowerCase}}->fill($request->all())->save();
+		$updated = $jurnal->fill($request->all())->save();
 		if ($updated) {
-			return $this->sendResponse($updated, '{{modelName}} updated successfully.');
+			return $this->sendResponse($updated, 'Jurnal updated successfully.');
 		} else {
-			return $this->sendError('{{modelName}} with id ' . $id . ' could not be updated.'); 
+			return $this->sendError('Jurnal with id ' . $id . ' could not be updated.'); 
 		}    
     }
 
@@ -164,14 +186,14 @@ class {{modelName}}Controller extends BaseController
     public function destroy($id)
     {
         // get current logged in user
-        ${{modelNameLowerCase}} = {{modelName}}::find($id); 
-        if (!${{modelNameLowerCase}}) {
-            return $this->sendError('{{modelName}} with id ' . $id . ' cannot be found.');
+        $jurnal = Jurnal::find($id); 
+        if (!$jurnal) {
+            return $this->sendError('Jurnal with id ' . $id . ' cannot be found.');
         }         
-        if (${{modelNameLowerCase}}->delete()) {
-            return $this->sendResponse(${{modelNameLowerCase}}, '{{modelName}} deleted successfully.');
+        if ($jurnal->delete()) {
+            return $this->sendResponse($jurnal, 'Jurnal deleted successfully.');
         } else {
-            return $this->sendError('{{modelName}} with id ' . $id . ' could not be deleted.');  
+            return $this->sendError('Jurnal with id ' . $id . ' could not be deleted.');  
         }
         
         

@@ -138,11 +138,7 @@ class {{modelName}}Controller extends BaseController
 			return $this->sendError('{{modelName}} with id ' . $id . ' cannot be found.');
 		}        
 		$validator = Validator::make($request->all(), [
-            'kode'=> 'required',
-            'nama'=> 'required',
-            // 'whatsapp_group'=> 'required',
-            // 'spreadsheet_id'=> 'required',
-            // 'sheet_id'=> 'required',
+            {{rules}}
 		]);
 		if($validator->fails()){
 			return $this->sendError('Validation Error.', $validator->errors());   
